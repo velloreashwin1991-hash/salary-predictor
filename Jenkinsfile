@@ -6,7 +6,10 @@ stages {
     stage('Check Files') {
         steps {
             sh '''
+                echo "Current Workspace:"
                 pwd
+
+                echo "Files:"
                 ls -la
             '''
         }
@@ -19,7 +22,7 @@ stages {
                 -v "$WORKSPACE:/app" \
                 -w /app \
                 python:3.14 \
-                sh -c "pip install -r requirements.txt && python train.py"
+                sh -c "pwd && ls -la && pip install -r requirements.txt && python train.py"
             '''
         }
     }
@@ -27,6 +30,7 @@ stages {
     stage('Verify Model') {
         steps {
             sh '''
+                echo "Workspace after training:"
                 ls -la
             '''
         }
@@ -35,9 +39,31 @@ stages {
     stage('Build Docker Image') {
         steps {
             sh '''
-                docker build -t salary-predictor:v1 .
+                docker build -t salary-predictor:v1 -f dockerfile .
             '''
         }
+    }
+
+    stage('Verify Docker Image') {
+        steps {
+            sh '''
+                docker images | grep salary-predictor || true
+            '''
+        }
+    }
+}
+
+post {
+    success {
+        echo 'MLOps Pipeline Completed Successfully'
+    }
+
+    failure {
+        echo 'Pipeline Failed'
+    }
+
+    always {
+        echo 'Pipeline Finished'
     }
 }
 
