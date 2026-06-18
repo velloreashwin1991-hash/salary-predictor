@@ -9,10 +9,13 @@ stages {
         }
     }
 
-    stage('Install Dependencies') {
+    stage('Create Python Environment') {
         steps {
             sh '''
-                pip3 install -r requirements.txt
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
             '''
         }
     }
@@ -20,7 +23,8 @@ stages {
     stage('Train Model') {
         steps {
             sh '''
-                python3 train.py
+                . venv/bin/activate
+                python train.py
             '''
         }
     }
