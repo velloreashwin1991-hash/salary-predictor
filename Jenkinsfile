@@ -44,6 +44,17 @@ stages {
             '''
         }
     }
+    stage('Run Docker Container') {
+    steps {
+        sh '''
+            docker rm -f salary-predictor || true
+            docker run -d \
+            --name salary-predictor \
+            -p 5000:5000 \
+            salary-predictor:v1
+        '''
+    }
+ }
 }
 
 post {
