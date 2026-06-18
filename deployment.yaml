@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: salary-predictor
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: salary-predictor
+
+  template:
+    metadata:
+      labels:
+        app: salary-predictor
+
+    spec:
+      containers:
+      - name: salary-predictor
+        image: salary-predictor:v1
+
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: salary-predictor-service
+
+spec:
+  selector:
+    app: salary-predictor
+
+  ports:
+  - port: 80
+    targetPort: 5000
+
+  type: NodePort
