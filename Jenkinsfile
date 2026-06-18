@@ -3,14 +3,16 @@ agent any
 
 stages {
 
-    stage('Check Files') {
+    stage('Checkout') {
+        steps {
+            sh 'ls -la'
+        }
+    }
+
+    stage('Install Dependencies') {
         steps {
             sh '''
-                echo "Current Workspace:"
-                pwd
-
-                echo "Files:"
-                ls -la
+                pip3 install -r requirements.txt
             '''
         }
     }
@@ -18,20 +20,7 @@ stages {
     stage('Train Model') {
         steps {
             sh '''
-                docker run --rm \
-                -v "$WORKSPACE:/app" \
-                -w /app \
-                python:3.14 \
-                sh -c "pwd && ls -la && pip install -r requirements.txt && python train.py"
-            '''
-        }
-    }
-
-    stage('Verify Model') {
-        steps {
-            sh '''
-                echo "Workspace after training:"
-                ls -la
+                python3 train.py
             '''
         }
     }
@@ -39,15 +28,15 @@ stages {
     stage('Build Docker Image') {
         steps {
             sh '''
-                docker build -t salary-predictor:v1 -f dockerfile .
+                docker build -t salary-predictor:v1 .
             '''
         }
     }
 
-    stage('Verify Docker Image') {
+    stage('Verify Image') {
         steps {
             sh '''
-                docker images | grep salary-predictor || true
+                docker images | grep salary-predictor
             '''
         }
     }
@@ -57,13 +46,8 @@ post {
     success {
         echo 'MLOps Pipeline Completed Successfully'
     }
-
     failure {
         echo 'Pipeline Failed'
-    }
-
-    always {
-        echo 'Pipeline Finished'
     }
 }
 
