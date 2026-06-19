@@ -4,10 +4,12 @@ pipeline {
     environment {
         IMAGE_NAME = "salary-predictor:v1"
         CONTAINER_NAME = "salary-predictor"
+        SONAR_SCANNER_HOME = tool 'sonar-scanner'
     }
 
     stages {
 
+        /* ===================== CHECKOUT ===================== */
         stage('Checkout') {
             steps {
                 sh '''
@@ -21,10 +23,12 @@ pipeline {
         /* ===================== SONARQUBE ===================== */
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        sonar-scanner
-                    '''
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                            ${SONAR_SCANNER_HOME}/bin/sonar-scanner
+                        """
+                    }
                 }
             }
         }
@@ -48,7 +52,7 @@ pipeline {
             }
         }
 
-        /* ===================== TRAIN ML MODEL ===================== */
+        /* ===================== TRAIN MODEL ===================== */
         stage('Train Model') {
             steps {
                 sh '''
