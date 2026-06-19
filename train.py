@@ -1,14 +1,20 @@
-import pickle
-import numpy as np
+import pandas as pd
 from sklearn.linear_model import LinearRegression
+import pickle
 
-X = np.array([[1],[2],[3],[4],[5],[6],[7],[8]])
-y = np.array([25000,30000,35000,45000,55000,65000,72000,80000])
+# Load CSV file
+df = pd.read_csv("salary_data.csv")
 
+# Features and target
+X = df[["experience"]]
+y = df["salary"]
+
+# Train model
 model = LinearRegression()
-model.fit(X,y)
+model.fit(X, y)
 
-with open("salary_model.pkl","wb") as f:
-    pickle.dump(model,f)
+# Save model
+with open("model.pkl", "wb") as f:
+    pickle.dump(model, f)
 
-print("Model trained and saved")
+print("Model trained and saved successfully!")
