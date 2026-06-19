@@ -8,7 +8,7 @@ y = np.array([25000,30000,35000,45000,55000,65000,72000,80000])
 model = LinearRegression()
 model.fit(X,y)
 
-with open("model.pkl","wb") as f:
+with open("salary_model.pkl","wb") as f:
     pickle.dump(model,f)
 
 print("Model trained and saved")
